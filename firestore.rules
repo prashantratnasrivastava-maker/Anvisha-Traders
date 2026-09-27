@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Ping check for connection validation
+    match /system_status/{docId} {
+      allow read, write: if true;
+    }
+
+    // Store settings and admin password
+    match /store_config/{configId} {
+      allow read, write: if true;
+    }
+
+    // Real-time Orders placed by Customers and managed by Admin
+    match /orders/{orderId} {
+      allow read, write: if true;
+    }
+
+    // Customer profiles saved via OTP login
+    match /customers/{customerPhone} {
+      allow read, write: if true;
+    }
+  }
+}

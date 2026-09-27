@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff7043"/>
+      <stop offset="100%" stop-color="#d84315"/>
+    </linearGradient>
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <!-- Background with rounded squircle -->
+  <rect width="512" height="512" rx="112" fill="url(#brandGrad)"/>
+  
+  <!-- Subtle inner ambient glow -->
+  <circle cx="256" cy="200" r="160" fill="#ffffff" opacity="0.12"/>
+  
+  <!-- Stylized Shopping Cart Bag & Letters AT -->
+  <g filter="url(#dropShadow)">
+    <!-- Shopping bag silhouette -->
+    <path d="M160 190 L352 190 L330 380 L182 380 Z" fill="#ffffff" opacity="0.95"/>
+    <!-- Handle -->
+    <path d="M210 190 C210 140 302 140 302 190" fill="none" stroke="#ffffff" stroke-width="20" stroke-linecap="round" opacity="0.95"/>
+    <!-- Modern Bold AT Monogram inside bag -->
+    <text x="256" y="315" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="92" font-weight="900" fill="#d84315" text-anchor="middle" letter-spacing="-2">AT</text>
+  </g>
+  
+  <!-- Subtitle banner badge -->
+  <rect x="146" y="340" width="220" height="34" rx="17" fill="#ff5722"/>
+  <text x="256" y="362" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="16" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="1">ANVISHA TRADERS</text>
+</svg>

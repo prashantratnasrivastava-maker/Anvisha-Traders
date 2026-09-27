@@ -1,0 +1,53 @@
+{
+  "entities": {
+    "StoreConfig": {
+      "title": "StoreConfig",
+      "description": "Global store settings, business profile, and admin security settings",
+      "type": "object",
+      "properties": {
+        "adminPhone": { "type": "string" },
+        "adminPassword": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Store orders synchronized in real-time across internet for Customer & Admin",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "deliveryAddress": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "CustomerProfile": {
+      "title": "CustomerProfile",
+      "description": "Registered customer details with phone and addresses",
+      "type": "object",
+      "properties": {
+        "phone": { "type": "string" },
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "lastLogin": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/store_config/{configId}": {
+      "schema": { "$ref": "#/entities/StoreConfig" },
+      "description": "Store configuration and admin password hash"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Real-time synced orders list"
+    },
+    "/customers/{customerPhone}": {
+      "schema": { "$ref": "#/entities/CustomerProfile" },
+      "description": "Customer profiles authenticated via phone OTP"
+    }
+  }
+}

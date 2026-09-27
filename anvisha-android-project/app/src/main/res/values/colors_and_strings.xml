@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Anvisha Traders</string>
+    <color name="colorPrimary">#ff5722</color>
+    <color name="colorPrimaryDark">#e64a19</color>
+    <color name="colorAccent">#ff5722</color>
+    <color name="windowBackground">#f8f8f9</color>
+</resources>

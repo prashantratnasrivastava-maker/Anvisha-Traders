@@ -1,0 +1,116 @@
+export type OrderStatus = 'pending' | 'confirmed' | 'dispatched' | 'delivered' | 'cancelled';
+
+export interface Product {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  mrp: number;
+  stock: number;
+  unit: string; // e.g. 'Piece', 'Kg', 'Packet', 'Set'
+  description: string;
+  image: string;
+  rating: number;
+  reviewsCount: number;
+  isPopular?: boolean;
+  isTrending?: boolean;
+  tags?: string[];
+  hsnCode?: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string;
+  description?: string;
+  productCount?: number;
+}
+
+export interface CartItem {
+  product: Product;
+  quantity: number;
+}
+
+export interface OrderItem {
+  productId: string;
+  name: string;
+  price: number;
+  mrp: number;
+  quantity: number;
+  unit: string;
+  image: string;
+  total: number;
+  hsnCode?: string;
+}
+
+export interface StatusTimelineEntry {
+  status: OrderStatus;
+  label: string;
+  timestamp: string;
+  note: string;
+}
+
+export interface Order {
+  id: string;
+  createdAt: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string;
+  deliveryAddress: string;
+  landmark?: string;
+  items: OrderItem[];
+  subtotal: number;
+  deliveryFee: number;
+  taxRate: number; // e.g. 5%
+  taxAmount: number;
+  grandTotal: number;
+  paymentMethod: 'cod' | 'upi';
+  paymentStatus: 'pending' | 'paid';
+  status: OrderStatus;
+  statusTimeline: StatusTimelineEntry[];
+  invoiceNumber?: string;
+  invoiceGeneratedAt?: string;
+  notes?: string;
+}
+
+export interface AppNotification {
+  id: string;
+  recipient: 'customer' | 'admin' | 'both';
+  title: string;
+  message: string;
+  type: 'order_placed' | 'order_status' | 'stock_alert' | 'system';
+  timestamp: string;
+  read: boolean;
+  orderId?: string;
+}
+
+export interface BusinessInfo {
+  name: string;
+  contact: string;
+  address: string;
+  pincode: string;
+  city: string;
+  state: string;
+  gstin: string;
+  upiId: string;
+  tagline: string;
+  bannerNotice: string;
+}
+
+export interface CustomerUser {
+  name: string;
+  phone: string;
+  address: string;
+  isLoggedIn: boolean;
+}
+
+export interface DailySalesReport {
+  date: string;
+  totalOrders: number;
+  totalRevenue: number;
+  totalUnitsSold: number;
+  completedOrders: number;
+  cancelledOrders: number;
+  orders: Order[];
+}

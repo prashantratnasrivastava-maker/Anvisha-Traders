@@ -1,0 +1,6 @@
+{
+  "name": "Anvisha Traders - Smart Store & Billing",
+  "description": "Customer ordering portal with live tracking and GST invoice viewer, paired with full Admin store, inventory, daily sales, and billing management for Anvisha Traders, Siwan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
