@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Boxes,
+  Camera,
   Check,
+  CheckCircle2,
   ChevronDown,
   Edit2,
+  FileUp,
   Filter,
   Flame,
   Image as ImageIcon,
+  Link as LinkIcon,
   Percent,
   Plus,
   RefreshCw,
@@ -15,6 +19,7 @@ import {
   Tag,
   Trash2,
   TrendingDown,
+  Upload,
   X,
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
@@ -58,9 +63,77 @@ export const AdminProducts: React.FC = () => {
   const [unit, setUnit] = useState('Piece');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState('');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [hsnCode, setHsnCode] = useState('6204');
   const [isTrending, setIsTrending] = useState(false);
   const [isPopular, setIsPopular] = useState(true);
+
+  // Directly handle image upload from phone camera, gallery or PC file picker
+  const handleImageFileUpload = (file: File) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Kripya valid image file (JPG, PNG, WEBP) chunein.');
+      return;
+    }
+    setUploadError(null);
+    setIsUploadingImage(true);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          // Client-side fast compression so it stores quickly in Firestore & loads instantly
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = Math.round((height * MAX_WIDTH) / width);
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = Math.round((width * MAX_HEIGHT) / height);
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            setImage(compressedDataUrl);
+          }
+        } catch {
+          // Fallback to original data URL if canvas fails
+          setImage(e.target?.result as string);
+        } finally {
+          setIsUploadingImage(false);
+        }
+      };
+      img.onerror = () => {
+        setUploadError('Image load karne me dikkat hui. Kripya dusri photo chunein.');
+        setIsUploadingImage(false);
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => {
+      setUploadError('File read karne me error aayi.');
+      setIsUploadingImage(false);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const resetForm = () => {
     setName('');
@@ -72,6 +145,8 @@ export const AdminProducts: React.FC = () => {
     setUnit('Piece');
     setDescription('');
     setImage('');
+    setUploadError(null);
+    setShowUrlInput(false);
     setHsnCode('6204');
     setIsTrending(false);
     setIsPopular(true);
@@ -1055,18 +1130,143 @@ export const AdminProducts: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-neutral-700 block mb-1">
-                  Product Image (Paste Image URL or Data URI)
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={image}
-                    onChange={(e) => setImage(e.target.value)}
-                    placeholder="https://... or leave empty for auto graphic"
-                    className="flex-1 px-3 py-2 text-xs rounded-xl border border-neutral-300 focus:border-[#ff5722] outline-none"
-                  />
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-bold text-neutral-800 flex items-center gap-1.5">
+                    <Camera className="w-3.5 h-3.5 text-[#ff5722]" />
+                    <span>Product Photo (Direct Upload from Gallery / Camera)</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowUrlInput(!showUrlInput)}
+                    className="text-[11px] font-semibold text-neutral-500 hover:text-neutral-800 underline flex items-center gap-1"
+                  >
+                    <LinkIcon className="w-2.5 h-2.5" />
+                    <span>{showUrlInput ? 'Hide URL input' : 'Ya phir link paste karein'}</span>
+                  </button>
                 </div>
+
+                {/* Hidden File Input */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png, image/jpeg, image/jpg, image/webp"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      handleImageFileUpload(e.target.files[0]);
+                    }
+                  }}
+                  className="hidden"
+                />
+
+                {/* Image Upload Area */}
+                {image ? (
+                  <div className="p-3 bg-neutral-50 border-2 border-orange-200 rounded-2xl flex items-center gap-3">
+                    <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-white border border-neutral-200 shrink-0 shadow-sm">
+                      <img
+                        src={image}
+                        alt="Product preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-1 right-1 bg-emerald-500 text-white rounded-full p-0.5 shadow">
+                        <Check className="w-3 h-3" />
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 mb-0.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Photo Uploaded & Ready</span>
+                      </div>
+                      <p className="text-[11px] text-neutral-500 line-clamp-1 mb-2">
+                        {image.startsWith('data:') ? 'Custom direct upload (Auto-optimized)' : 'Image source linked'}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={isUploadingImage}
+                          className="px-2.5 py-1 bg-white hover:bg-neutral-100 text-neutral-800 border border-neutral-300 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer"
+                        >
+                          <Upload className="w-3 h-3 text-[#ff5722]" />
+                          <span>Change Photo</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setImage('');
+                            if (fileInputRef.current) fileInputRef.current.value = '';
+                          }}
+                          className="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                          <span>Remove</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                        handleImageFileUpload(e.dataTransfer.files[0]);
+                      }
+                    }}
+                    className={`cursor-pointer group border-2 border-dashed rounded-2xl p-5 text-center transition-all ${
+                      isUploadingImage
+                        ? 'border-orange-400 bg-orange-50/50'
+                        : 'border-neutral-300 hover:border-[#ff5722] hover:bg-orange-50/30'
+                    }`}
+                  >
+                    {isUploadingImage ? (
+                      <div className="flex flex-col items-center justify-center py-2">
+                        <RefreshCw className="w-6 h-6 text-[#ff5722] animate-spin mb-2" />
+                        <span className="text-xs font-bold text-neutral-700">Photo optimize & upload ho rahi hai...</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-orange-100 group-hover:bg-[#ff5722] group-hover:text-white text-[#ff5722] flex items-center justify-center mb-2 transition-all shadow-sm">
+                          <Upload className="w-5 h-5" />
+                        </div>
+                        <p className="text-xs font-bold text-neutral-800 mb-0.5">
+                          Click karke Photo Upload karein (Gallery ya Camera)
+                        </p>
+                        <p className="text-[11px] text-neutral-500">
+                          Direct mobile phone gallery ya PC se photo chunein (JPG, PNG, WEBP)
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {uploadError && (
+                  <p className="text-xs text-red-500 font-semibold mt-1.5 flex items-center gap-1">
+                    <span>⚠️</span> {uploadError}
+                  </p>
+                )}
+
+                {/* Optional URL Input if toggled */}
+                {showUrlInput && (
+                  <div className="mt-2.5 pt-2.5 border-t border-neutral-200">
+                    <label className="text-[11px] font-semibold text-neutral-600 block mb-1">
+                      Or Paste Image Link directly:
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={image.startsWith('data:') ? '' : image}
+                        onChange={(e) => setImage(e.target.value)}
+                        placeholder="https://images.unsplash.com/..."
+                        className="flex-1 px-3 py-1.5 text-xs rounded-xl border border-neutral-300 focus:border-[#ff5722] outline-none"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>
