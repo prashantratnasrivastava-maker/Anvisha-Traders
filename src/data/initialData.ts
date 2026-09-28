@@ -1,4 +1,4 @@
-import { BusinessInfo, Category, Order, Product, AppNotification } from '../types';
+import { BusinessInfo, Category, Order, Product, AppNotification, ProductShort } from '../types';
 
 export const initialBusinessInfo: BusinessInfo = {
   name: 'Anvisha Traders',
@@ -11,6 +11,20 @@ export const initialBusinessInfo: BusinessInfo = {
   upiId: '7000455037@ybl',
   tagline: 'Wholesale & Retail General Store, Quality Clothing & Daily Essentials',
   bannerNotice: 'Special Offer: Free delivery across Pachrukhi & Siwan on orders above ₹499!',
+  offersEnabled: true,
+  offerTag: 'Festive Mega Offer',
+  offerHeading: 'Explore Complete Catalog & Festive Deals',
+  offerSubheading: 'Special wholesale & retail discounts! Quality clothing, daily groceries & spices delivered in Pachrukhi & Siwan.',
+  offerBadgeText: 'Flat Discounts & Bulk Savings',
+  offerButtonText: 'Loot Lo / Explore Offers',
+  offerDiscountPercent: 15,
+  fast2SmsApiKey: '',
+  smsGatewayEnabled: false,
+  whatsappCloudApiEnabled: true,
+  whatsappPhoneNumberId: '1397545823431957',
+  whatsappAccessToken: 'EAAaldnSWWQIBSmioIJXUfmtwLQzKahrZBfz0UdL62IHuUDmabtZAiq291uahZBgu4fCZBNmvQBhQF7KTfjKv7FQGS0kUuqG8djp0DK3VK0lNzocwZAOy3nZCl0Twwi9rN7jZACEMKeCwq9fGzV2WZBMlFDsVcwQlbAeaINBxyZC4wXLAXZCu0OfZBOptICgfa5cWZClg6IBFZA5yeXsKGtSJ5gMJgNwNNt3TLVKXisKehwilDNCek6s2ud1QfEs7oUdZCcNEwL4bTM6D9uYQZBIhTjVeRASV8S9gQZDZD',
+  whatsappBusinessAccountId: '2031583170859394',
+  whatsappTemplateName: 'hello_world',
 };
 
 export const initialCategories: Category[] = [
@@ -475,3 +489,72 @@ export const initialNotifications: AppNotification[] = [
     read: false,
   },
 ];
+
+export const initialProductShorts: ProductShort[] = [
+  {
+    id: 'short-1',
+    title: 'Festive Kurta & Dupatta Unboxing & Fabric Look ✨',
+    description: 'Chanderi silk festive kurta fabric demo - perfect finish and rich embroidery for wedding & puja season.',
+    videoUrl: '/videos/kurta-short.mp4',
+    thumbnail: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=80',
+    productId: 'prod-1',
+    productName: 'Royal Silk Embroidered Festive Kurta Set',
+    productPrice: 1850,
+    productUnit: 'Set',
+    productImage: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=80',
+    viewsCount: 2450,
+    likesCount: 184,
+    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+    uploadedBy: 'Admin (Anvisha Traders)',
+  },
+  {
+    id: 'short-2',
+    title: 'Pure Desi Kacchi Ghani Mustard Oil Purity Test 🪔',
+    description: '100% cold-pressed traditional mustard oil. Thick pungent aroma & natural golden color direct from Pachrukhi store.',
+    videoUrl: '/videos/mustard-oil-short.mp4',
+    thumbnail: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80',
+    productId: 'prod-8',
+    productName: 'Pure Desi Kacchi Ghani Mustard Oil',
+    productPrice: 195,
+    productUnit: 'Bottle (1L)',
+    productImage: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80',
+    viewsCount: 3820,
+    likesCount: 260,
+    createdAt: new Date(Date.now() - 86400000 * 4).toISOString(),
+    uploadedBy: 'Admin (Anvisha Traders)',
+  },
+  {
+    id: 'short-3',
+    title: 'California Jumbo Almonds & Cashew Quality Check 🥜',
+    description: 'Crisp, vacuum sealed dry fruits stock arrived fresh at Anvisha Traders, Siwan.',
+    videoUrl: '/videos/almonds-short.mp4',
+    thumbnail: 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?auto=format&fit=crop&w=600&q=80',
+    productId: 'prod-6',
+    productName: 'California Jumbo Almonds (Badam Giri)',
+    productPrice: 490,
+    productUnit: 'Packet (500g)',
+    productImage: 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?auto=format&fit=crop&w=600&q=80',
+    viewsCount: 1940,
+    likesCount: 142,
+    createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
+    uploadedBy: 'Admin (Anvisha Traders)',
+  },
+  {
+    id: 'short-4',
+    title: 'Whole Spices & Shahi Garam Masala Aroma 🌶️',
+    description: 'Fresh batch of aromatic whole Indian spices and garam masala ground fresh for Siwan customers.',
+    videoUrl: '/videos/spices-short.mp4',
+    thumbnail: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&q=80',
+    productId: 'prod-10',
+    productName: 'Special Shahi Biryani & Sabji Masala Combo',
+    productPrice: 175,
+    productUnit: 'Box (2x100g)',
+    productImage: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&q=80',
+    viewsCount: 1530,
+    likesCount: 98,
+    createdAt: new Date(Date.now() - 86400000 * 6).toISOString(),
+    uploadedBy: 'Admin (Anvisha Traders)',
+  },
+];
+
+

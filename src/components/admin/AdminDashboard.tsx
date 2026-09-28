@@ -14,6 +14,8 @@ import {
   ShoppingBag,
   TrendingUp,
   Truck,
+  Users,
+  UserCheck,
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { OrderStatus } from '../../types';
@@ -27,6 +29,8 @@ export const AdminDashboard: React.FC = () => {
     updateOrderStatus,
     setSelectedOrderForInvoice,
     adjustStock,
+    customerApprovalRequests,
+    pendingApprovalsCount,
   } = useStore();
 
   // Metrics
@@ -89,22 +93,25 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Products in Store */}
-        <div className="bg-white p-4 rounded-2xl border border-neutral-200 shadow-xs flex flex-col justify-between">
+        {/* Customer Approvals KPI */}
+        <div
+          onClick={() => setAdminTab('customers')}
+          className="bg-white p-4 rounded-2xl border border-neutral-200 shadow-xs flex flex-col justify-between cursor-pointer hover:border-amber-300 transition-colors"
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
-              Active Catalog
+              Customer Approvals
             </span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Boxes className="w-4 h-4" />
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${pendingApprovalsCount > 0 ? 'bg-amber-100 text-amber-700 animate-pulse' : 'bg-neutral-100 text-neutral-600'}`}>
+              <Users className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <span className="text-2xl font-black text-neutral-900 tabular-nums font-display">
-              {products.length} SKUs
+              {pendingApprovalsCount} Pending
             </span>
             <p className="text-[11px] text-neutral-500 mt-0.5">
-              Across {categories.length} categories
+              {customerApprovalRequests.length} registered customers
             </p>
           </div>
         </div>
@@ -133,6 +140,13 @@ export const AdminDashboard: React.FC = () => {
       {/* Quick Actions Strip */}
       <div className="flex flex-wrap items-center gap-2 p-3 bg-neutral-900 text-white rounded-2xl shadow-sm">
         <span className="text-xs font-bold text-neutral-300 ml-2 mr-1">Quick Actions:</span>
+        <button
+          onClick={() => setAdminTab('customers')}
+          className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs"
+        >
+          <UserCheck className="w-3.5 h-3.5" />
+          <span>Verify Customers {pendingApprovalsCount > 0 ? `(${pendingApprovalsCount})` : ''}</span>
+        </button>
         <button
           onClick={() => setAdminTab('products')}
           className="px-3 py-1.5 bg-[#ff5722] hover:bg-[#f4511e] text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors"
@@ -226,10 +240,10 @@ export const AdminDashboard: React.FC = () => {
                   <button
                     onClick={() => setSelectedOrderForInvoice(order)}
                     className="px-2.5 py-1 bg-neutral-900 hover:bg-neutral-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1 shadow-2xs"
-                    title="View & Print Official GST Invoice"
+                    title="View, Edit Rates & Print Official GST Invoice"
                   >
                     <FileText className="w-3 h-3 text-[#ff7043]" />
-                    <span>Invoice</span>
+                    <span>Invoice / Edit Rate</span>
                   </button>
                 </div>
               </div>

@@ -27,6 +27,35 @@ export interface Category {
   productCount?: number;
 }
 
+export interface ProductShort {
+  id: string;
+  title: string;
+  description?: string;
+  videoUrl: string; // Direct mp4/webm link or data URL or YouTube/Cloud URL
+  thumbnail?: string;
+  productId?: string;
+  productName?: string;
+  productPrice?: number;
+  productUnit?: string;
+  productImage?: string;
+  viewsCount: number;
+  likesCount: number;
+  createdAt: string;
+  uploadedBy?: string;
+}
+
+export type AdminTab =
+  | 'dashboard'
+  | 'products'
+  | 'shorts'
+  | 'categories'
+  | 'inventory'
+  | 'orders'
+  | 'customers'
+  | 'reports'
+  | 'settings';
+
+
 export interface CartItem {
   product: Product;
   quantity: number;
@@ -88,6 +117,7 @@ export interface AppNotification {
 export interface BusinessInfo {
   name: string;
   contact: string;
+  phone?: string;
   address: string;
   pincode: string;
   city: string;
@@ -96,13 +126,45 @@ export interface BusinessInfo {
   upiId: string;
   tagline: string;
   bannerNotice: string;
+  // Offer & Promotional Banner settings
+  offersEnabled?: boolean;
+  offerTag?: string;
+  offerHeading?: string;
+  offerSubheading?: string;
+  offerBadgeText?: string;
+  offerButtonText?: string;
+  offerDiscountPercent?: number;
+  fast2SmsApiKey?: string;
+  smsGatewayEnabled?: boolean;
+  whatsappCloudApiEnabled?: boolean;
+  whatsappPhoneNumberId?: string;
+  whatsappAccessToken?: string;
+  whatsappBusinessAccountId?: string;
+  whatsappTemplateName?: string;
 }
 
 export interface CustomerUser {
+  id?: string;
   name: string;
   phone: string;
   address: string;
   isLoggedIn: boolean;
+  status?: 'approved' | 'pending' | 'rejected' | 'blocked';
+  requestedAt?: string;
+  approvedAt?: string;
+  rejectionReason?: string;
+}
+
+export interface CustomerApprovalRequest {
+  id: string;
+  phone: string;
+  name: string;
+  address: string;
+  status: 'pending' | 'approved' | 'rejected' | 'blocked';
+  requestedAt: string;
+  approvedAt?: string;
+  rejectionReason?: string;
+  deviceInfo?: string;
 }
 
 export interface DailySalesReport {

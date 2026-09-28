@@ -104,7 +104,7 @@ export const PWAInstallModal: React.FC<{ isOpen: boolean; onClose: () => void }>
   onClose,
 }) => {
   const { isInstallable, install } = usePWAInstall();
-  const [activeTab, setActiveTab] = useState<'app' | 'pwabuilder' | 'manifest'>('app');
+  const [activeTab, setActiveTab] = useState<'app' | 'pwabuilder' | 'manifest' | 'android'>('android');
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [copiedManifest, setCopiedManifest] = useState(false);
 

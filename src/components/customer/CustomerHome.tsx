@@ -48,73 +48,80 @@ export const CustomerHome: React.FC = () => {
 
   return (
     <div className="pb-24 max-w-4xl mx-auto px-4 pt-3">
-      {/* Hero Promotional Banner - Exactly matching the reference screenshot! */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#ffe0cc] via-[#ffd2be] to-[#ffb396] p-6 shadow-sm border border-orange-200/60 mb-5">
-        <div className="relative z-10 max-w-[65%]">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/80 backdrop-blur-sm text-neutral-800 text-[11px] font-bold mb-2 shadow-xs">
-            <span className="text-[#ff5722]">★</span>
-            <span>{businessInfo.name} Haul</span>
+      {/* Hero Promotional Banner - Controlled by Admin with ON/OFF switch & custom offer copy */}
+      {(businessInfo.offersEnabled ?? true) && (
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#ffe0cc] via-[#ffd2be] to-[#ffb396] p-6 shadow-sm border border-orange-200/60 mb-5 animate-in fade-in duration-200">
+          <div className="relative z-10 max-w-[65%]">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/90 backdrop-blur-sm text-neutral-800 text-[11px] font-bold mb-2 shadow-xs">
+              <span className="text-[#ff5722]">★</span>
+              <span>{businessInfo.offerTag || `${businessInfo.name} Special Offer`}</span>
+              {businessInfo.offerDiscountPercent ? (
+                <span className="bg-[#ff5722] text-white text-[10px] px-1.5 py-0.2 rounded-full font-black ml-0.5">
+                  {businessInfo.offerDiscountPercent}% OFF
+                </span>
+              ) : null}
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-neutral-900 tracking-tight leading-tight font-display text-balance">
+              {businessInfo.offerHeading || 'Explore Complete Catalog & Collections'}
+            </h2>
+            <p className="text-xs text-neutral-700 mt-1 line-clamp-2">
+              {businessInfo.offerSubheading || 'Quality clothing, fresh grocery & authentic spices delivered right in Pachrukhi & Siwan.'}
+            </p>
+            <div className="mt-4 flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setSelectedCategorySlug(null);
+                  const el = document.getElementById('product-catalog');
+                  el?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="px-4 py-2 bg-[#ff5722] hover:bg-[#f4511e] text-white text-xs font-bold rounded-xl shadow-md shadow-orange-500/30 transition-transform active:scale-95 whitespace-nowrap"
+              >
+                {businessInfo.offerButtonText || 'Explore Catalog'}
+              </button>
+              <span className="text-[11px] font-semibold text-neutral-700 hidden sm:inline">
+                Fast Doorstep Delivery in Pachrukhi &amp; Siwan
+              </span>
+            </div>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-neutral-900 tracking-tight leading-tight font-display text-balance">
-            Explore Complete Catalog &amp; Collections
-          </h2>
-          <p className="text-xs text-neutral-700 mt-1 line-clamp-2">
-            Quality clothing, fresh grocery &amp; authentic spices delivered right in Pachrukhi &amp; Siwan.
-          </p>
-          <div className="mt-4 flex items-center gap-2">
-            <button
-              onClick={() => {
-                setSelectedCategorySlug(null);
-                const el = document.getElementById('product-catalog');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="px-4 py-2 bg-[#ff5722] hover:bg-[#f4511e] text-white text-xs font-bold rounded-xl shadow-md shadow-orange-500/30 transition-transform active:scale-95 whitespace-nowrap"
-            >
-              Explore Catalog
-            </button>
-            <span className="text-[11px] font-semibold text-neutral-700 hidden sm:inline">
-              Fast Doorstep Delivery in Pachrukhi &amp; Siwan
-            </span>
-          </div>
-        </div>
 
-        {/* Decorative 3D Cart / Gift graphic inspired by reference screenshot */}
-        <div className="absolute right-2 -bottom-2 sm:right-6 sm:bottom-2 w-32 h-32 sm:w-44 sm:h-44 pointer-events-none flex items-center justify-center">
-          <div className="relative w-full h-full flex items-center justify-center">
-            {/* Soft decorative background circles */}
-            <div className="absolute inset-0 rounded-full bg-white/30 backdrop-blur-xs scale-90" />
-            <svg
-              viewBox="0 0 100 100"
-              className="w-28 h-28 sm:w-36 sm:h-36 drop-shadow-xl"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {/* Basket */}
-              <rect x="25" y="38" width="50" height="35" rx="6" fill="#ffffff" opacity="0.9" />
-              <path
-                d="M30 42 H70 M30 50 H70 M30 58 H70 M30 66 H70 M38 38 V73 M48 38 V73 M58 38 V73 M68 38 V73"
-                stroke="#ff7043"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                opacity="0.8"
-              />
-              <path
-                d="M20 32 L27 38 H75 L82 25"
-                stroke="#d84315"
-                strokeWidth="3"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <circle cx="35" cy="78" r="5" fill="#37474f" />
-              <circle cx="65" cy="78" r="5" fill="#37474f" />
-              {/* Floating gifts */}
-              <rect x="35" y="24" width="16" height="16" rx="2" fill="#ff5722" transform="rotate(-8 43 32)" />
-              <rect x="52" y="20" width="18" height="18" rx="2" fill="#ffd54f" transform="rotate(12 61 29)" />
-              <circle cx="48" cy="18" r="4" fill="#ffab91" />
-              <circle cx="28" cy="22" r="3" fill="#ffecb3" />
-            </svg>
+          {/* Decorative 3D Cart / Gift graphic inspired by reference screenshot */}
+          <div className="absolute right-2 -bottom-2 sm:right-6 sm:bottom-2 w-32 h-32 sm:w-44 sm:h-44 pointer-events-none flex items-center justify-center">
+            <div className="relative w-full h-full flex items-center justify-center">
+              {/* Soft decorative background circles */}
+              <div className="absolute inset-0 rounded-full bg-white/30 backdrop-blur-xs scale-90" />
+              <svg
+                viewBox="0 0 100 100"
+                className="w-28 h-28 sm:w-36 sm:h-36 drop-shadow-xl"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {/* Basket */}
+                <rect x="25" y="38" width="50" height="35" rx="6" fill="#ffffff" opacity="0.9" />
+                <path
+                  d="M30 42 H70 M30 50 H70 M30 58 H70 M30 66 H70 M38 38 V73 M48 38 V73 M58 38 V73 M68 38 V73"
+                  stroke="#ff7043"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  opacity="0.8"
+                />
+                <path
+                  d="M20 32 L27 38 H75 L82 25"
+                  stroke="#d84315"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <circle cx="35" cy="78" r="5" fill="#37474f" />
+                <circle cx="65" cy="78" r="5" fill="#37474f" />
+                {/* Floating gifts */}
+                <rect x="35" y="24" width="16" height="16" rx="2" fill="#ff5722" transform="rotate(-8 43 32)" />
+                <rect x="52" y="20" width="18" height="18" rx="2" fill="#ffd54f" transform="rotate(12 61 29)" />
+                <circle cx="48" cy="18" r="4" fill="#ffab91" />
+                <circle cx="28" cy="22" r="3" fill="#ffecb3" />
+              </svg>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Quick Action Pill Tags - Exact match to the reference screenshot row */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none no-scrollbar">

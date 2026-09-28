@@ -56,9 +56,20 @@ export const CustomerProfile: React.FC = () => {
             <h3 className="text-base font-bold text-neutral-900 truncate">
               {currentCustomer.name}
             </h3>
-            <span className="text-[10px] font-bold text-[#ff5722] bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-full">
-              Privileged Member
-            </span>
+            {currentCustomer.status === 'approved' ? (
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                Verified &amp; Approved
+              </span>
+            ) : currentCustomer.status === 'pending' ? (
+              <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                Pending Approval
+              </span>
+            ) : (
+              <span className="text-[10px] font-bold text-neutral-500 bg-neutral-100 border border-neutral-200 px-2 py-0.5 rounded-full">
+                Guest Customer
+              </span>
+            )}
           </div>
           <p className="text-xs text-neutral-500 flex items-center gap-1 mt-0.5">
             <Phone className="w-3 h-3 text-neutral-400" />

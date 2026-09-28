@@ -4,9 +4,11 @@ import {
   CheckCircle2,
   Clock,
   Download,
+  Edit3,
   FileText,
   Filter,
   MapPin,
+  MessageSquare,
   Phone,
   Search,
   Truck,
@@ -155,10 +157,27 @@ export const AdminOrders: React.FC = () => {
                   <button
                     onClick={() => handleCreateOrViewInvoice(order)}
                     className="px-3 py-1.5 bg-[#ff5722] hover:bg-[#f4511e] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm shadow-orange-500/20"
-                    title="Generate & View Official GST Invoice"
+                    title="Generate & View Official GST Invoice with custom rates"
                   >
                     <FileText className="w-3.5 h-3.5" />
-                    <span>Official Invoice</span>
+                    <span>Invoice / Edit Rate</span>
+                  </button>
+
+                  {/* Send Bill via WhatsApp 1-Click Button */}
+                  <button
+                    onClick={() => {
+                      const cleanPhone = order.customerPhone.replace(/[^0-9]/g, '');
+                      const itemsText = order.items
+                        .map((it) => `• ${it.name} (${it.quantity} ${it.unit}) - ₹${it.total}`)
+                        .join('\n');
+                      const msg = `🧾 *ANVISHA TRADERS - ORDER BILL & DETAILS*\n\nNamaste ${order.customerName} ji,\n\nAapka order confirm ho chuka hai!\n\n📋 *Order ID:* ${order.id}\n💵 *Total Bill:* ₹${order.grandTotal.toLocaleString('en-IN')}\n💳 *Payment Mode:* ${order.paymentMethod.toUpperCase()} (${order.paymentStatus})\n📍 *Address:* ${order.deliveryAddress}\n\n*Items:*\n${itemsText}\n\n🚚 *Delivery:* Pachrukhi & Siwan Express\n📞 *Call/Support:* 7000455037\n\nDhanyawad!`;
+                      window.open(`https://api.whatsapp.com/send?phone=91${cleanPhone}&text=${encodeURIComponent(msg)}`, '_blank');
+                    }}
+                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm shadow-emerald-600/20"
+                    title="Send detailed Bill directly to customer on WhatsApp"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>WhatsApp Bill</span>
                   </button>
                 </div>
               </div>

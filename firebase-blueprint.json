@@ -26,13 +26,36 @@
     },
     "CustomerProfile": {
       "title": "CustomerProfile",
-      "description": "Registered customer details with phone and addresses",
+      "description": "Registered customer details with phone, name, address, and admin approval status",
       "type": "object",
       "properties": {
+        "id": { "type": "string" },
         "phone": { "type": "string" },
         "name": { "type": "string" },
         "address": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected", "blocked"] },
+        "requestedAt": { "type": "string" },
+        "approvedAt": { "type": "string" },
+        "rejectionReason": { "type": "string" },
         "lastLogin": { "type": "string" }
+      }
+    },
+    "ProductShort": {
+      "title": "ProductShort",
+      "description": "Short product promotion video uploaded by Admin and playable in Customer Shorts feed",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "videoUrl": { "type": "string" },
+        "thumbnail": { "type": "string" },
+        "productId": { "type": "string" },
+        "productName": { "type": "string" },
+        "productPrice": { "type": "number" },
+        "viewsCount": { "type": "number" },
+        "likesCount": { "type": "number" },
+        "createdAt": { "type": "string" }
       }
     }
   },
@@ -48,6 +71,11 @@
     "/customers/{customerPhone}": {
       "schema": { "$ref": "#/entities/CustomerProfile" },
       "description": "Customer profiles authenticated via phone OTP"
+    },
+    "/product_shorts/{shortId}": {
+      "schema": { "$ref": "#/entities/ProductShort" },
+      "description": "Uploaded short product videos displayed on Customer Shorts tab"
     }
   }
 }
+

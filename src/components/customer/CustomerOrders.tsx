@@ -8,6 +8,7 @@ import {
   Download,
   FileText,
   MapPin,
+  MessageSquare,
   Package,
   Phone,
   RefreshCw,
@@ -289,13 +290,30 @@ export const CustomerOrders: React.FC = () => {
                       <span className="line-clamp-2">{order.deliveryAddress}</span>
                     </div>
 
-                    <a
-                      href={`tel:${businessInfo.contact}`}
-                      className="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition-colors shrink-0"
-                    >
-                      <Phone className="w-3.5 h-3.5 text-[#ff7043]" />
-                      <span>Contact Store ({businessInfo.contact})</span>
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          const itemsList = order.items
+                            .map((it) => `• ${it.name} (${it.quantity} ${it.unit})`)
+                            .join('\n');
+                          const waText = `🛍️ *ANVISHA TRADERS - ORDER INQUIRY*\n\nNamaste Anvisha Traders,\nMera Order ID: *${order.id}*\nStatus: *${order.status.toUpperCase()}*\nBill Total: *₹${order.grandTotal.toLocaleString('en-IN')}*\n\n*Items:*\n${itemsList}\n\nKripya mujhe is order ki delivery update de dijiye.`;
+                          window.open(`https://api.whatsapp.com/send?phone=917000455037&text=${encodeURIComponent(waText)}`, '_blank');
+                        }}
+                        className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors shrink-0"
+                        title="Get live delivery update on WhatsApp"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        <span>WhatsApp Status</span>
+                      </button>
+
+                      <a
+                        href={`tel:${businessInfo.contact}`}
+                        className="px-3.5 py-2 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors shrink-0"
+                      >
+                        <Phone className="w-3.5 h-3.5 text-[#ff7043]" />
+                        <span>Call Store</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
               )}

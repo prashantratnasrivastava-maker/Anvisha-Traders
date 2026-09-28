@@ -17,9 +17,11 @@ import { ProductDetailModal } from './components/customer/ProductDetailModal';
 import { AdminHeader } from './components/admin/AdminHeader';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AdminProducts } from './components/admin/AdminProducts';
+import { AdminShorts } from './components/admin/AdminShorts';
 import { AdminCategories } from './components/admin/AdminCategories';
 import { AdminInventory } from './components/admin/AdminInventory';
 import { AdminOrders } from './components/admin/AdminOrders';
+import { AdminCustomers } from './components/admin/AdminCustomers';
 import { AdminReports } from './components/admin/AdminReports';
 import { AdminSettings } from './components/admin/AdminSettings';
 import { InvoiceModal } from './components/invoice/InvoiceModal';
@@ -58,9 +60,11 @@ const MainApp: React.FC = () => {
             {/* Admin Tab Views */}
             {adminTab === 'dashboard' && <AdminDashboard />}
             {adminTab === 'products' && <AdminProducts />}
+            {adminTab === 'shorts' && <AdminShorts />}
             {adminTab === 'categories' && <AdminCategories />}
             {adminTab === 'inventory' && <AdminInventory />}
             {adminTab === 'orders' && <AdminOrders />}
+            {adminTab === 'customers' && <AdminCustomers />}
             {adminTab === 'reports' && <AdminReports />}
             {adminTab === 'settings' && <AdminSettings />}
           </div>

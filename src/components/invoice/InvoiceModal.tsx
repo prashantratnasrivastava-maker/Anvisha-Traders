@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Download,
+  Edit3,
+  Check,
+  RotateCcw,
   MapPin,
+  MessageSquare,
   Phone,
   Printer,
   ShieldCheck,
   Store,
   X,
+  AlertCircle,
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 
@@ -72,7 +77,32 @@ export const InvoiceModal: React.FC = () => {
     selectedOrderForInvoice,
     setSelectedOrderForInvoice,
     businessInfo,
+    activeRole,
+    updateOrderInvoiceDetails,
   } = useStore();
+
+  const [isEditingRates, setIsEditingRates] = useState(false);
+  const [editedItems, setEditedItems] = useState<{ productId: string; price: number; quantity: number }[]>([]);
+  const [editedDeliveryFee, setEditedDeliveryFee] = useState<number>(0);
+  const [editedTaxRate, setEditedTaxRate] = useState<number>(5);
+  const [editedNotes, setEditedNotes] = useState<string>('');
+  const [saveSuccessMsg, setSaveSuccessMsg] = useState(false);
+
+  useEffect(() => {
+    if (selectedOrderForInvoice) {
+      setEditedItems(
+        selectedOrderForInvoice.items.map((it) => ({
+          productId: it.productId,
+          price: it.price,
+          quantity: it.quantity,
+        }))
+      );
+      setEditedDeliveryFee(selectedOrderForInvoice.deliveryFee);
+      setEditedTaxRate(selectedOrderForInvoice.taxRate);
+      setEditedNotes(selectedOrderForInvoice.notes || '');
+      setIsEditingRates(false);
+    }
+  }, [selectedOrderForInvoice]);
 
   if (!selectedOrderForInvoice) return null;
 
@@ -97,24 +127,91 @@ export const InvoiceModal: React.FC = () => {
     window.print();
   };
 
+  const handleSaveEditedRates = () => {
+    updateOrderInvoiceDetails(order.id, editedItems, {
+      deliveryFee: editedDeliveryFee,
+      taxRate: editedTaxRate,
+      notes: editedNotes,
+    });
+    setIsEditingRates(false);
+    setSaveSuccessMsg(true);
+    setTimeout(() => setSaveSuccessMsg(false), 3000);
+  };
+
+  const handleResetToOriginal = () => {
+    setEditedItems(
+      order.items.map((it) => ({
+        productId: it.productId,
+        price: it.price,
+        quantity: it.quantity,
+      }))
+    );
+    setEditedDeliveryFee(order.deliveryFee);
+    setEditedTaxRate(order.taxRate);
+    setEditedNotes(order.notes || '');
+    setIsEditingRates(false);
+  };
+
+  // Preview grand total while editing
+  const previewSubtotal = editedItems.reduce((sum, it) => sum + (it.price || 0) * (it.quantity || 1), 0);
+  const previewTaxAmount = Number(((previewSubtotal * (editedTaxRate || 0)) / 100).toFixed(2));
+  const previewGrandTotal = Number((previewSubtotal + previewTaxAmount + (editedDeliveryFee || 0)).toFixed(2));
+
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
       <div className="bg-white rounded-3xl max-w-3xl w-full my-auto shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150">
         {/* Modal actions bar (hidden during print) */}
-        <div className="no-print bg-neutral-900 text-white px-5 py-3.5 flex items-center justify-between">
+        <div className="no-print bg-neutral-900 text-white px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-[#ff7043]">Tax Invoice</span>
             <span className="text-neutral-500">|</span>
             <span className="text-xs font-mono text-neutral-300">{invoiceNumber}</span>
+            {saveSuccessMsg && (
+              <span className="text-[11px] font-bold text-emerald-400 bg-emerald-950/70 border border-emerald-800 px-2 py-0.5 rounded-md flex items-center gap-1">
+                <Check className="w-3 h-3" /> Rate Updated!
+              </span>
+            )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Admin Custom Rate Editor Toggle Button */}
+            {activeRole === 'admin' && (
+              <button
+                type="button"
+                onClick={() => setIsEditingRates(!isEditingRates)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm ${
+                  isEditingRates
+                    ? 'bg-amber-500 hover:bg-amber-600 text-neutral-950 font-black'
+                    : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200 border border-neutral-700'
+                }`}
+                title="Edit item rates and discounts before issuing bill"
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                <span>{isEditingRates ? 'Cancel Rate Edit' : 'Edit Bill Rates'}</span>
+              </button>
+            )}
+
+            <button
+              onClick={() => {
+                const cleanPhone = order.customerPhone.replace(/[^0-9]/g, '');
+                const itemsList = order.items
+                  .map((it) => `• ${it.name} (${it.quantity} ${it.unit}) - ₹${it.price}/unit = ₹${it.total}`)
+                  .join('\n');
+                const invoiceMsg = `🧾 *ANVISHA TRADERS - TAX INVOICE BILL*\n\nNamaste ${order.customerName} ji,\n\nAapka Official Invoice Bill tayar hai:\n\n📄 *Invoice No:* ${invoiceNumber}\n🗓️ *Date:* ${invoiceDate}\n💵 *Total Amount:* ₹${order.grandTotal.toLocaleString('en-IN')}\n💳 *Payment Status:* ${order.paymentMethod.toUpperCase()} (${order.paymentStatus})\n📍 *Delivery Address:* ${order.deliveryAddress}\n\n*Purchased Items & Rates:*\n${itemsList}\n\nGSTIN: ${businessInfo.gstin}\nShop: ${businessInfo.address}\nHelpline: ${businessInfo.contact}\n\nDhanyawad! Anvisha Traders.`;
+                window.open(`https://api.whatsapp.com/send?phone=91${cleanPhone}&text=${encodeURIComponent(invoiceMsg)}`, '_blank');
+              }}
+              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+              title="Send Invoice Summary directly to Customer's WhatsApp"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>WhatsApp Bill</span>
+            </button>
             <button
               onClick={handlePrint}
               className="px-3 py-1.5 bg-[#ff5722] hover:bg-[#f4511e] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Print / Save PDF</span>
+              <span>Print / PDF</span>
             </button>
             <button
               onClick={() => setSelectedOrderForInvoice(null)}
@@ -124,6 +221,81 @@ export const InvoiceModal: React.FC = () => {
             </button>
           </div>
         </div>
+
+        {/* Admin Rate Edit Banner Panel (visible only when isEditingRates is true) */}
+        {isEditingRates && activeRole === 'admin' && (
+          <div className="no-print bg-amber-50 border-b border-amber-200 p-4 animate-in slide-in-from-top duration-150">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-amber-200 text-amber-900 flex items-center justify-center shrink-0">
+                  <Edit3 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-amber-950">
+                    Admin Rate Editing Mode (Rate Edit Panel)
+                  </h4>
+                  <p className="text-[11px] text-amber-800">
+                    Aap table me har item ka Rate (₹) aur Delivery fee apne hisab se badal sakte hain. Naya total turant update hoga.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <button
+                  type="button"
+                  onClick={handleResetToOriginal}
+                  className="px-3 py-1.5 bg-white border border-neutral-300 text-neutral-700 rounded-xl text-xs font-bold hover:bg-neutral-50 flex items-center gap-1"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Reset</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveEditedRates}
+                  className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Save &amp; Update Invoice</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Adjust Extras */}
+            <div className="mt-3 pt-3 border-t border-amber-200/80 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <label className="block text-[11px] font-bold text-amber-900 mb-1">
+                  Delivery / Transport Fee (₹):
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={editedDeliveryFee}
+                  onChange={(e) => setEditedDeliveryFee(parseFloat(e.target.value) || 0)}
+                  className="w-full bg-white px-2.5 py-1 text-xs rounded-lg border border-amber-300 focus:border-amber-600 font-bold outline-none tabular-nums"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold text-amber-900 mb-1">
+                  GST Tax Rate (%):
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="28"
+                  value={editedTaxRate}
+                  onChange={(e) => setEditedTaxRate(parseFloat(e.target.value) || 0)}
+                  className="w-full bg-white px-2.5 py-1 text-xs rounded-lg border border-amber-300 focus:border-amber-600 font-bold outline-none tabular-nums"
+                />
+              </div>
+              <div className="flex flex-col justify-end">
+                <span className="text-[11px] text-amber-900 font-medium">New Grand Total Preview:</span>
+                <span className="text-base font-black text-[#ff5722] tabular-nums font-display">
+                  ₹{previewGrandTotal.toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Printable Official Invoice Body */}
         <div id="printable-invoice" className="p-6 sm:p-8 bg-white text-neutral-900 font-sans">
@@ -214,32 +386,77 @@ export const InvoiceModal: React.FC = () => {
                   <th className="p-2.5">Item Description</th>
                   <th className="p-2.5">HSN</th>
                   <th className="p-2.5 text-center">Qty</th>
-                  <th className="p-2.5 text-right">Unit Rate</th>
+                  <th className="p-2.5 text-right">Unit Rate (₹)</th>
                   <th className="p-2.5 text-right">Amount (₹)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200">
-                {order.items.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-neutral-50/50">
-                    <td className="p-2.5 text-neutral-500 tabular-nums">{idx + 1}</td>
-                    <td className="p-2.5 font-bold text-neutral-900">
-                      {item.name}
-                      <span className="text-[10px] text-neutral-500 block font-normal">
-                        Packaging: {item.unit}
-                      </span>
-                    </td>
-                    <td className="p-2.5 font-mono text-neutral-600">{item.hsnCode || '6204'}</td>
-                    <td className="p-2.5 text-center font-bold text-neutral-800 tabular-nums">
-                      {item.quantity}
-                    </td>
-                    <td className="p-2.5 text-right tabular-nums text-neutral-700">
-                      ₹{item.price.toFixed(2)}
-                    </td>
-                    <td className="p-2.5 text-right font-bold text-neutral-900 tabular-nums">
-                      ₹{item.total.toFixed(2)}
-                    </td>
-                  </tr>
-                ))}
+                {order.items.map((item, idx) => {
+                  const currentEdit = editedItems.find((e) => e.productId === item.productId);
+                  const currentRate = isEditingRates && currentEdit ? currentEdit.price : item.price;
+                  const currentQty = isEditingRates && currentEdit ? currentEdit.quantity : item.quantity;
+                  const currentItemTotal = currentRate * currentQty;
+
+                  return (
+                    <tr key={idx} className="hover:bg-neutral-50/50">
+                      <td className="p-2.5 text-neutral-500 tabular-nums">{idx + 1}</td>
+                      <td className="p-2.5 font-bold text-neutral-900">
+                        {item.name}
+                        <span className="text-[10px] text-neutral-500 block font-normal">
+                          Packaging: {item.unit}
+                        </span>
+                      </td>
+                      <td className="p-2.5 font-mono text-neutral-600">{item.hsnCode || '6204'}</td>
+                      <td className="p-2.5 text-center font-bold text-neutral-800 tabular-nums">
+                        {isEditingRates ? (
+                          <input
+                            type="number"
+                            min="1"
+                            value={currentQty}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value) || 1;
+                              setEditedItems((prev) =>
+                                prev.map((p) =>
+                                  p.productId === item.productId ? { ...p, quantity: Math.max(1, val) } : p
+                                )
+                              );
+                            }}
+                            className="w-14 text-center px-1 py-0.5 border border-amber-400 bg-amber-50/50 rounded font-bold outline-none tabular-nums"
+                          />
+                        ) : (
+                          item.quantity
+                        )}
+                      </td>
+                      <td className="p-2.5 text-right tabular-nums text-neutral-700">
+                        {isEditingRates ? (
+                          <div className="flex items-center justify-end gap-1">
+                            <span className="text-neutral-400">₹</span>
+                            <input
+                              type="number"
+                              step="0.5"
+                              min="0"
+                              value={currentRate}
+                              onChange={(e) => {
+                                const val = parseFloat(e.target.value) || 0;
+                                setEditedItems((prev) =>
+                                  prev.map((p) =>
+                                    p.productId === item.productId ? { ...p, price: Math.max(0, val) } : p
+                                  )
+                                );
+                              }}
+                              className="w-20 text-right px-1.5 py-0.5 border border-amber-400 bg-amber-50/50 rounded font-bold text-neutral-900 outline-none tabular-nums"
+                            />
+                          </div>
+                        ) : (
+                          `₹${item.price.toFixed(2)}`
+                        )}
+                      </td>
+                      <td className="p-2.5 text-right font-bold text-neutral-900 tabular-nums">
+                        ₹{currentItemTotal.toFixed(2)}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -251,7 +468,7 @@ export const InvoiceModal: React.FC = () => {
                 Amount Chargeable (in words):
               </span>
               <p className="font-bold text-neutral-900 italic bg-neutral-50 p-2.5 rounded-xl border border-neutral-200/80 leading-relaxed">
-                {numberToIndianWords(order.grandTotal)}
+                {numberToIndianWords(isEditingRates ? previewGrandTotal : order.grandTotal)}
               </p>
 
               <div className="mt-3 text-[11px] text-neutral-500 space-y-0.5">
@@ -265,31 +482,33 @@ export const InvoiceModal: React.FC = () => {
               <div className="flex justify-between text-neutral-600">
                 <span>Subtotal (Taxable Value):</span>
                 <span className="tabular-nums font-semibold text-neutral-900">
-                  ₹{order.subtotal.toFixed(2)}
+                  ₹{(isEditingRates ? previewSubtotal : order.subtotal).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-neutral-600">
-                <span>CGST (2.5%):</span>
+                <span>CGST ({( (isEditingRates ? editedTaxRate : order.taxRate) / 2 ).toFixed(1)}%):</span>
                 <span className="tabular-nums font-semibold text-neutral-900">
-                  ₹{cgstAmount.toFixed(2)}
+                  ₹{( (isEditingRates ? previewTaxAmount : order.taxAmount) / 2 ).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-neutral-600">
-                <span>SGST (2.5%):</span>
+                <span>SGST ({( (isEditingRates ? editedTaxRate : order.taxRate) / 2 ).toFixed(1)}%):</span>
                 <span className="tabular-nums font-semibold text-neutral-900">
-                  ₹{sgstAmount.toFixed(2)}
+                  ₹{( (isEditingRates ? previewTaxAmount : order.taxAmount) / 2 ).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-neutral-600">
                 <span>Shipping / Delivery Charges:</span>
                 <span className="tabular-nums font-semibold text-neutral-900">
-                  {order.deliveryFee === 0 ? 'FREE' : `₹${order.deliveryFee.toFixed(2)}`}
+                  {(isEditingRates ? editedDeliveryFee : order.deliveryFee) === 0
+                    ? 'FREE'
+                    : `₹${(isEditingRates ? editedDeliveryFee : order.deliveryFee).toFixed(2)}`}
                 </span>
               </div>
               <div className="pt-2 border-t border-neutral-300 flex justify-between text-sm font-black text-neutral-900">
                 <span>Grand Total:</span>
                 <span className="text-base text-[#ff5722] tabular-nums font-display">
-                  ₹{order.grandTotal.toFixed(2)}
+                  ₹{(isEditingRates ? previewGrandTotal : order.grandTotal).toFixed(2)}
                 </span>
               </div>
             </div>

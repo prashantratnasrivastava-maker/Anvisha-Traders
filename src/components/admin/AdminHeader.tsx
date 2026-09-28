@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   BarChart3,
   Boxes,
+  Clapperboard,
   Download,
   FileSpreadsheet,
   FolderTree,
@@ -11,10 +12,12 @@ import {
   ShoppingBag,
   Store,
   Truck,
+  Users,
   LogOut,
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { PWAInstallModal } from '../common/PWAInstallModal';
+import { AdminTab } from '../../types';
 
 export const AdminHeader: React.FC = () => {
   const {
@@ -23,23 +26,28 @@ export const AdminHeader: React.FC = () => {
     setActiveRole,
     orders,
     products,
+    shorts,
     businessInfo,
     logoutAdmin,
+    pendingApprovalsCount,
   } = useStore();
   const [showInstallModal, setShowInstallModal] = useState(false);
 
   const pendingOrdersCount = orders.filter((o) => o.status === 'pending').length;
   const lowStockCount = products.filter((p) => p.stock <= 5).length;
 
-  const tabs = [
+  const tabs: { id: AdminTab; label: string; icon: React.ElementType; badge?: number }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'products', label: 'Products', icon: Boxes },
+    { id: 'shorts', label: 'Video Shorts 🎬', icon: Clapperboard, badge: shorts.length },
     { id: 'categories', label: 'Categories', icon: FolderTree },
     { id: 'inventory', label: 'Inventory & Stock', icon: Package, badge: lowStockCount },
     { id: 'orders', label: 'Orders & Invoices', icon: Truck, badge: pendingOrdersCount },
+    { id: 'customers', label: 'Customer Approvals', icon: Users, badge: pendingApprovalsCount },
     { id: 'reports', label: 'Daily Sales Report', icon: BarChart3 },
     { id: 'settings', label: 'Store Settings', icon: Settings },
   ];
+
 
   return (
     <div className="bg-white border-b border-neutral-200 sticky top-[53px] z-30">
@@ -90,18 +98,7 @@ export const AdminHeader: React.FC = () => {
             return (
               <button
                 key={tab.id}
-                onClick={() =>
-                  setAdminTab(
-                    tab.id as
-                      | 'dashboard'
-                      | 'products'
-                      | 'categories'
-                      | 'inventory'
-                      | 'orders'
-                      | 'reports'
-                      | 'settings'
-                  )
-                }
+                onClick={() => setAdminTab(tab.id)}
                 className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl whitespace-nowrap transition-all shrink-0 ${
                   isActive
                     ? 'bg-neutral-900 text-white shadow-sm'

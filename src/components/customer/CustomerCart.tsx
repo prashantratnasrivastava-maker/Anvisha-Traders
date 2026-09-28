@@ -28,6 +28,7 @@ export const CustomerCart: React.FC = () => {
     setSelectedOrderForTracking,
     businessInfo,
     currentCustomer,
+    setShowCustomerLoginModal,
   } = useStore();
 
   const [customerName, setCustomerName] = useState(currentCustomer.name || 'Prashant Ratna Srivastava');
@@ -49,6 +50,12 @@ export const CustomerCart: React.FC = () => {
   const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
     if (cart.length === 0) return;
+
+    // Check if customer is approved
+    if (!currentCustomer.isLoggedIn || currentCustomer.status !== 'approved') {
+      setShowCustomerLoginModal(true);
+      return;
+    }
 
     setIsPlacing(true);
     setTimeout(() => {
@@ -321,20 +328,50 @@ export const CustomerCart: React.FC = () => {
         </div>
 
         {/* Submit Order Button */}
-        <button
-          type="submit"
-          disabled={isPlacing}
-          className="w-full py-3.5 bg-[#ff5722] hover:bg-[#f4511e] active:scale-[0.99] text-white text-sm font-bold rounded-2xl shadow-lg shadow-orange-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60"
-        >
-          {isPlacing ? (
-            <span>Placing Order with Anvisha Traders...</span>
-          ) : (
-            <>
-              <span>Confirm &amp; Place Order Request</span>
+        {(!currentCustomer.isLoggedIn || currentCustomer.status !== 'approved') ? (
+          <div className="space-y-2">
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-center justify-between">
+              <div>
+                <span className="font-bold block">Account Approval Required</span>
+                <span className="text-[11px] text-amber-800">
+                  {currentCustomer.status === 'pending'
+                    ? 'Aapki request dukan admin ke paas pending hai.'
+                    : 'Order place karne ke liye apna Name aur Mobile verify karein.'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCustomerLoginModal(true)}
+                className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-xs shrink-0"
+              >
+                {currentCustomer.status === 'pending' ? 'Check Status' : 'Sign In'}
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowCustomerLoginModal(true)}
+              className="w-full py-3.5 bg-neutral-900 hover:bg-neutral-800 text-white text-sm font-bold rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
+            >
+              <span>Verify / Sign In to Place Order</span>
               <ArrowRight className="w-4 h-4" />
-            </>
-          )}
-        </button>
+            </button>
+          </div>
+        ) : (
+          <button
+            type="submit"
+            disabled={isPlacing}
+            className="w-full py-3.5 bg-[#ff5722] hover:bg-[#f4511e] active:scale-[0.99] text-white text-sm font-bold rounded-2xl shadow-lg shadow-orange-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+          >
+            {isPlacing ? (
+              <span>Placing Order with Anvisha Traders...</span>
+            ) : (
+              <>
+                <span>Confirm &amp; Place Order Request</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </button>
+        )}
       </form>
 
       {/* QR Code Popup */}

@@ -25,5 +25,11 @@ service cloud.firestore {
     match /customers/{customerPhone} {
       allow read, write: if true;
     }
+
+    // Product short promotion videos uploaded by Admin & watched by customers
+    match /product_shorts/{shortId} {
+      allow read, write: if true;
+    }
   }
 }
+
