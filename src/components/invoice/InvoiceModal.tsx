@@ -302,25 +302,32 @@ export const InvoiceModal: React.FC = () => {
           {/* Header Block */}
           <div className="border-b-2 border-neutral-900 pb-5">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-              <div>
-                <h1 className="text-2xl font-black tracking-tight text-neutral-900 font-display">
-                  {businessInfo.name}
-                </h1>
-                <p className="text-xs font-semibold text-neutral-600 mt-0.5">
-                  {businessInfo.tagline}
-                </p>
-                <div className="mt-2 text-xs text-neutral-700 leading-relaxed max-w-md">
-                  <p className="font-medium">{businessInfo.address}</p>
-                  <p>
-                    <span className="font-bold">Contact: </span>
-                    <span className="tabular-nums font-semibold">{businessInfo.contact}</span>
-                    <span className="mx-2">·</span>
-                    <span className="font-bold">GSTIN: </span>
-                    <span className="font-mono font-bold text-neutral-900">{businessInfo.gstin}</span>
+              <div className="flex items-start gap-3.5">
+                <img
+                  src="/logo.png"
+                  alt="Anvisha Traders Official Logo"
+                  className="w-16 h-16 object-contain rounded-xl border border-neutral-200 p-0.5 shrink-0"
+                />
+                <div>
+                  <h1 className="text-2xl font-black tracking-tight text-neutral-900 font-display">
+                    {businessInfo.name}
+                  </h1>
+                  <p className="text-xs font-semibold text-neutral-600 mt-0.5">
+                    {businessInfo.tagline}
                   </p>
-                  <p className="text-[11px] text-neutral-500">
-                    State: Bihar (Code 10) · Pachrukhi, Siwan
-                  </p>
+                  <div className="mt-2 text-xs text-neutral-700 leading-relaxed max-w-md">
+                    <p className="font-medium">{businessInfo.address}</p>
+                    <p>
+                      <span className="font-bold">Contact: </span>
+                      <span className="tabular-nums font-semibold">{businessInfo.contact}</span>
+                      <span className="mx-2">·</span>
+                      <span className="font-bold">GSTIN: </span>
+                      <span className="font-mono font-bold text-neutral-900">{businessInfo.gstin}</span>
+                    </p>
+                    <p className="text-[11px] text-neutral-500">
+                      State: Bihar (Code 10) · Pachrukhi, Siwan
+                    </p>
+                  </div>
                 </div>
               </div>
 

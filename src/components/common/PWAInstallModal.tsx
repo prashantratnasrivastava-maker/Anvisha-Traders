@@ -141,10 +141,12 @@ export const PWAInstallModal: React.FC<{ isOpen: boolean; onClose: () => void }>
       <div className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150">
         {/* Header */}
         <div className="flex items-center justify-between p-4 sm:p-5 border-b border-neutral-100 bg-neutral-50/70">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-[#ff5722] text-white flex items-center justify-center font-bold shadow-sm shadow-orange-500/20">
-              <Download className="w-5 h-5" />
-            </div>
+          <div className="flex items-center gap-3">
+            <img
+              src="/logo.png"
+              alt="Anvisha Traders"
+              className="w-10 h-10 object-contain rounded-xl bg-white border border-neutral-200 p-0.5 shadow-sm"
+            />
             <div>
               <h3 className="text-base font-extrabold text-neutral-900 font-display">
                 Anvisha App &amp; PWABuilder Hub

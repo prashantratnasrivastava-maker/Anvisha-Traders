@@ -205,10 +205,12 @@ export const Header: React.FC = () => {
             }}
             className="text-left group"
           >
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#ff5722] to-[#ff8a65] flex items-center justify-center text-white font-bold shadow-md shadow-orange-500/20">
-                AT
-              </div>
+            <div className="flex items-center gap-2.5">
+              <img
+                src="/logo.png"
+                alt="Anvisha Traders Logo"
+                className="w-10 h-10 object-contain rounded-xl shadow-sm border border-neutral-200 bg-white p-0.5 group-hover:scale-105 transition-transform"
+              />
               <div>
                 <span className="text-lg font-extrabold tracking-tight text-neutral-900 group-hover:text-[#ff5722] transition-colors font-display block leading-tight">
                   {businessInfo.name}

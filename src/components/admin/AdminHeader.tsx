@@ -55,7 +55,12 @@ export const AdminHeader: React.FC = () => {
         {/* Top admin notice banner */}
         <div className="py-2.5 flex flex-wrap items-center justify-between gap-3 border-b border-neutral-100">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <img
+              src="/logo.png"
+              alt="Anvisha Traders"
+              className="w-6 h-6 object-contain rounded-md bg-white border border-neutral-200"
+            />
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-xs font-bold text-neutral-900 font-display">
               {businessInfo.name} Management Portal
             </span>
